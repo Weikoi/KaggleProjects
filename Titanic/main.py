@@ -38,16 +38,18 @@ print(df["Pclass"].unique())
 print(df["Sex"].unique())
 
 df["Age"].fillna(df["Age"].mean(), inplace=True)
-df['AgeBand'] = pd.cut(df['Age'], [0, 5, 15, 30, 50, 80], labels=[0.2, 0.4, 0.6, 0.8, 1], include_lowest=True)
+df['AgeBand'] = pd.cut(df['Age'], [0, 5, 10, 15, 20, 25, 30, 50, 80], labels=[0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 1],
+                       include_lowest=True)
 
 df["Fare"].fillna(df["Fare"].median(), inplace=True)
 df['FareBand'] = pd.cut(df['Fare'], [0, 5, 15, 30, 200, 1000], labels=[0.2, 0.4, 0.6, 0.8, 1], include_lowest=True)
 
 df['Has_family'] = df['SibSp'] + df['Parch']
-# df['SibSpBand'] = pd.cut(df['SibSp'], [0, 1, 100], labels=[0, 1], include_lowest=True)
+# df['SibSpBand'] = pd.cut(df['SibSp'], [0, 1, 2, 3, 4, 6, 100], labels=[0, 1], include_lowest=True)
 #
 # df['ParchBand'] = pd.cut(df['Parch'], [0, 1, 100], labels=[0, 1], include_lowest=True)
-df['Has_family_Band'] = pd.cut(df['Has_family'], [0, 1, 100], labels=[0, 1], include_lowest=True)
+df['Has_family_Band'] = pd.cut(df['Has_family'], [0, 1, 2, 3, 4, 5, 100], labels=[0, 0.2, 0.4, 0.6, 0.8, 1],
+                               include_lowest=True)
 
 df["Sex"] = df["Sex"].map({'male': 1, 'female': 0})
 
@@ -170,47 +172,47 @@ print("RandomForest:", accuracy_score(y_test, y_pred_rf))
 """
 lightGBM
 """
-import lightgbm as lgb
-
-X, val_X, y, val_y = train_test_split(
-    X_train,
-    y_train,
-    test_size=0.05,
-    random_state=1,
-    stratify=y_train  ## 这里保证分割后y的比例分布与原数据一致
-)
-lgb_train = lgb.Dataset(X_train, y_train)
-lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
-# specify your configurations as a dict
-params = {
-    'boosting_type': 'gbdt',
-    'objective': 'multiclass',
-    'num_class': 2,
-    'metric': 'multi_error',
-    'num_leaves': 300,
-    'min_data_in_leaf': 100,
-    'learning_rate': 0.01,
-    'feature_fraction': 0.8,
-    'bagging_fraction': 0.8,
-    'bagging_freq': 5,
-    'lambda_l1': 0.4,
-    'lambda_l2': 0.5,
-    'min_gain_to_split': 0.2,
-    'verbose': 5,
-    'is_unbalance': True
-}
-
-# train
-print('Start training...')
-gbm = lgb.train(params,
-                lgb_train,
-                num_boost_round=10000,
-                valid_sets=lgb_eval,
-                early_stopping_rounds=500)
-
-print('Start predicting...')
-
-preds = gbm.predict(test_x, num_iteration=gbm.best_iteration)  # 输出的是概率结果
+# import lightgbm as lgb
+#
+# X, val_X, y, val_y = train_test_split(
+#     X_train,
+#     y_train,
+#     test_size=0.05,
+#     random_state=1,
+#     stratify=y_train  ## 这里保证分割后y的比例分布与原数据一致
+# )
+# lgb_train = lgb.Dataset(X_train, y_train)
+# lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
+# # specify your configurations as a dict
+# params = {
+#     'boosting_type': 'gbdt',
+#     'objective': 'multiclass',
+#     'num_class': 2,
+#     'metric': 'multi_error',
+#     'num_leaves': 300,
+#     'min_data_in_leaf': 100,
+#     'learning_rate': 0.01,
+#     'feature_fraction': 0.8,
+#     'bagging_fraction': 0.8,
+#     'bagging_freq': 5,
+#     'lambda_l1': 0.4,
+#     'lambda_l2': 0.5,
+#     'min_gain_to_split': 0.2,
+#     'verbose': 5,
+#     'is_unbalance': True
+# }
+#
+# # train
+# print('Start training...')
+# gbm = lgb.train(params,
+#                 lgb_train,
+#                 num_boost_round=10000,
+#                 valid_sets=lgb_eval,
+#                 early_stopping_rounds=500)
+#
+# print('Start predicting...')
+#
+# preds = gbm.predict(test_x, num_iteration=gbm.best_iteration)  # 输出的是概率结果
 # %%
 """
 特征评分
