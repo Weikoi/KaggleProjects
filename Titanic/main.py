@@ -67,6 +67,10 @@ X = df_train_test.drop(
 X_submission = df_submission.drop(
     ["Name", "Ticket", "Cabin", "Embarked", "Age", "Fare", "SibSp", "Parch", "Has_family"],
     axis=1)
+
+df_train_test.hist()
+plt.show()
+
 print(X)
 print(y)
 
@@ -224,7 +228,10 @@ rnd_clf.fit(X_train, y_train)
 print("==========================================")
 for name, score in zip(X_train.columns, rnd_clf.feature_importances_):
     print(name, score)
-print(pd.DataFrame(index=X_train.columns, data=rnd_clf.feature_importances_, columns=['Feature Importance']))
+print('\n\n')
+df = pd.DataFrame(index=X_train.columns, data=rnd_clf.feature_importances_, columns=['Feature Importance'])
+df = df.sort_values(by='Feature Importance', ascending=False)
+print(df)
 
 """
 submission
@@ -243,5 +250,4 @@ df_sub = pd.DataFrame()
 df_sub["PassengerId"] = ps_id
 df_sub["Survived"] = y_submission.astype(int)
 
-print(df_sub)
 df_sub.to_csv("./data/submission.csv", index=None)
